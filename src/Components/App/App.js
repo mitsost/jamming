@@ -25,55 +25,79 @@ class App extends Component {
   };
 
   search(searchTerm) {
-    console.log(searchTerm);
-    Spotify.search(searchTerm).then(
-      results => {
+    console.log(searchTerm + '  xxxxxxoxooxoxooxoxoxoxooxoxoxoxox');
+    Spotify.search(searchTerm).then(response => {
 		    this.setState({
-		       searchResults: results
+		       "searchResults": response
   		  });
+        console.log("Line 33 of App.js says hello:  " + response);
       }
     );
   };
 
   savePlaylist() {
+    console.log("Entered savePlaylist function in App.js");
     let trackURIs = [];
     this.state.playlistTracks.map(
       (x) => trackURIs.push(x.uri)
     );
+
+    console.log("trackURIs are --- " + trackURIs);
+    console.log("this.state.playlistName --- " + this.state.playlistName);
 
     Spotify.savePlaylist(this.state.playlistName, trackURIs);
 
     this.setState(
       {
         "searchResults": [],
-        "playlistName": "New Playlist",
+        "playlistName": "New Playlistxxx",
         "playlistTracks": []
       }
     );
   };
 
   updatePlaylistName(name) {
+    console.log("Entered updatePlaylistName - with name  =  " + name);
     this.setState(
-      "playlistName": name
+      {
+        "playlistName": name
+      }
+
     )
   };
 
   addTrack(track) {
-    const pos = this.state.playlistTracks.findIndex(x => x.id === track.id);
+    console.log("Adding track to playlist:  " + JSON.stringify(track));
+    console.log("this.state.playlistTracks is: " + this.state.playlistTracks)
+    console.log("track.id is: " + track.id)
+    let pos = this.state.playlistTracks.indexOf(track);
+    console.log("pos is  " + pos)
+
     if (pos === -1) {
+      console.log("About to set state for playlistTracks")
+      const newPlaylist = this.state.playlistTracks;
+      newPlaylist.push(track);
       this.setState(
-        this.state.playlistTracks.push(track)
+        { playlistTracks: newPlaylist }
       );
+      console.log("playlistTracks contains: " + JSON.stringify(this.state.playlistTracks));
     };
   };
 
+
   removeTrack(track) {
-    this.setState(
-      this.playlistTracks.filter(
-        (x) => { return x.id !== track.id }
-      )
+    console.log("track id is: " + track.id);
+    console.log("playlistTracks before: " + JSON.stringify(this.state.playlistTracks));
+    const newPlaylistTracks = this.state.playlistTracks.filter(
+      (x) => { return x.id !== track.id }
     );
+    console.log("playlistTracks after: " + JSON.stringify(newPlaylistTracks));
+    this.setState(
+      { playlistTracks: newPlaylistTracks }
+    );
+    console.log("playlistTracks before: " + JSON.stringify(this.state.playlistTracks));
   };
+
 
   render() {
     return (
@@ -88,6 +112,8 @@ class App extends Component {
               onRemove={this.removeTrack}
               playlistName={this.state.playlistName}
               playlistTracks={this.state.playlistTracks}
+              onSave={this.savePlaylist}
+              isRemoval={true}
             />
           </div>
         </div>
